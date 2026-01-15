@@ -42,8 +42,8 @@ const PlayerControls = {
         
         let currentSpeed = CONFIG.moveSpeed;
         
-        // Sprint
-        if (this.keys['shift'] || MobileButtons.isSprinting) {
+        // Sprint (PC o móvil)
+        if (this.keys['shift'] || (GameState.isMobile && TouchManager.isSprinting)) {
             currentSpeed *= CONFIG.sprintMultiplier;
         }
         
@@ -55,17 +55,15 @@ const PlayerControls = {
         
         // Movimiento con joystick (móvil)
         if (GameState.isMobile) {
-            const joystickInput = Joystick.getInput();
+            const joystickInput = TouchManager.getJoystickInput();
             if (joystickInput.active) {
-                // Adelante/atrás (Y invertido porque arriba es negativo)
                 camera.position.add(direction.clone().multiplyScalar(-joystickInput.y * currentSpeed));
-                // Izquierda/derecha
                 camera.position.add(right.clone().multiplyScalar(joystickInput.x * currentSpeed));
             }
         }
         
         // Salto
-        const wantsJump = this.keys[' '] || MobileButtons.isJumping;
+        const wantsJump = this.keys[' '] || (GameState.isMobile && TouchManager.isJumping);
         if (wantsJump && this.isGrounded) {
             this.velocityY = CONFIG.jumpForce;
             this.isGrounded = false;

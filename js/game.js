@@ -9,11 +9,9 @@ const Game = {
         PlayerControls.init();
         Menu.init();
         
-        // Inicializar controles móviles si es necesario
+        // Inicializar gestor de toques unificado para móvil
         if (GameState.isMobile) {
-            Joystick.init();
-            TouchCamera.init();
-            MobileButtons.init();
+            TouchManager.init();
         }
         
         // Iniciar loop

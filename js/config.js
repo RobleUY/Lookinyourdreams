@@ -3,7 +3,7 @@ const CONFIG = {
     moveSpeed: 0.15,
     sprintMultiplier: 1.8,
     mouseSensitivity: 0.002,
-    touchSensitivity: 0.004,
+    touchSensitivity: 0.008, // Aumentada para mejor respuesta en móvil
     jumpForce: 0.25,
     gravity: 0.012,
     playerHeight: 1.6
