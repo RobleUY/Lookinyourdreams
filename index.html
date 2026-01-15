@@ -13,16 +13,52 @@
 <body>
     <!-- Menú de inicio -->
     <div id="menu-screen">
-        <h1 class="game-title">Look In Your Dreams</h1>
-        <button id="play-button">JUGAR</button>
-        <div class="controls-info">
-            <div class="desktop-info">
-                <p>WASD - Mover | SHIFT - Correr | ESPACIO - Saltar</p>
-                <p>Mouse - Mirar alrededor</p>
+        <div class="stars" id="stars"></div>
+        <div class="menu-content">
+            <h1 class="game-title">Look In Your<br>Dreams</h1>
+            <p class="game-subtitle">Explora lo desconocido</p>
+            
+            <div class="menu-buttons">
+                <button id="play-button" class="menu-btn">Jugar</button>
+                <button id="settings-button" class="menu-btn">Ajustes</button>
             </div>
-            <div class="mobile-info">
-                <p>Joystick - Mover | Desliza - Mirar</p>
-                <p>Botones - Saltar y Correr</p>
+            
+            <div class="controls-info">
+                <div class="desktop-info">
+                    <p>WASD - Mover | SHIFT - Correr | ESPACIO - Saltar</p>
+                    <p>Mouse - Mirar alrededor</p>
+                </div>
+                <div class="mobile-info">
+                    <p>Joystick - Mover | Desliza - Mirar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de ajustes -->
+    <div id="settings-panel">
+        <div class="settings-content">
+            <h2 class="settings-title">Ajustes</h2>
+            
+            <div class="setting-group">
+                <div class="setting-label">
+                    <span>Sensibilidad (PC)</span>
+                    <span class="setting-value" id="mouse-sens-value">50</span>
+                </div>
+                <input type="range" class="setting-slider" id="mouse-sensitivity" min="1" max="100" value="50">
+            </div>
+            
+            <div class="setting-group">
+                <div class="setting-label">
+                    <span>Sensibilidad (Móvil)</span>
+                    <span class="setting-value" id="touch-sens-value">50</span>
+                </div>
+                <input type="range" class="setting-slider" id="touch-sensitivity" min="1" max="100" value="50">
+            </div>
+            
+            <div class="settings-buttons">
+                <button id="close-settings" class="settings-btn">Cerrar</button>
+                <button id="save-settings" class="settings-btn">Guardar</button>
             </div>
         </div>
     </div>
@@ -30,14 +66,17 @@
     <!-- Canvas del juego -->
     <canvas id="canvas"></canvas>
 
+    <!-- Crosshair -->
+    <div id="crosshair"></div>
+
     <!-- Controles móviles -->
     <div id="joystick-container">
         <div id="joystick-base">
+            <div id="sprint-zone"></div>
             <div id="joystick-stick"></div>
         </div>
     </div>
     <button id="jump-button">SALTAR</button>
-    <button id="sprint-button">RUN</button>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

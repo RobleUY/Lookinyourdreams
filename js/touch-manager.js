@@ -1,17 +1,16 @@
 // Gestor centralizado de toques - evita conflictos entre joystick y cámara
 const TouchManager = {
-    touches: new Map(), // Almacena todos los toques activos
+    touches: new Map(),
     joystickTouchId: null,
     cameraTouchId: null,
     jumpTouchId: null,
-    sprintTouchId: null,
     
     // Referencias a elementos
     joystickBase: null,
     joystickStick: null,
     joystickContainer: null,
     jumpButton: null,
-    sprintButton: null,
+    sprintZone: null,
     
     // Estado del joystick
     joystickBaseX: 0,
@@ -27,14 +26,17 @@ const TouchManager = {
     
     // Estado de botones
     isJumping: false,
-    isSprinting: false,
+    isSprinting: false, // Se activa al subir el joystick a la zona de sprint
+    
+    // Umbral para activar sprint (qué tan arriba debe estar el joystick)
+    sprintThreshold: -0.85, // -1 es arriba del todo
     
     init() {
         this.joystickContainer = document.getElementById('joystick-container');
         this.joystickBase = document.getElementById('joystick-base');
         this.joystickStick = document.getElementById('joystick-stick');
         this.jumpButton = document.getElementById('jump-button');
-        this.sprintButton = document.getElementById('sprint-button');
+        this.sprintZone = document.getElementById('sprint-zone');
         
         // Un solo listener global para todos los eventos táctiles
         document.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: false });
@@ -61,23 +63,19 @@ const TouchManager = {
             if (this.isInsideElement(touch, this.joystickBase) && this.joystickTouchId === null) {
                 e.preventDefault();
                 this.startJoystick(touch);
+                // Al tocar el joystick, desactivar sprint
+                this.isSprinting = false;
+                this.updateSprintVisual();
             } 
             else if (this.isInsideElement(touch, this.jumpButton) && this.jumpTouchId === null) {
                 e.preventDefault();
                 this.jumpTouchId = touch.identifier;
                 this.isJumping = true;
             }
-            else if (this.isInsideElement(touch, this.sprintButton) && this.sprintTouchId === null) {
-                e.preventDefault();
-                this.sprintTouchId = touch.identifier;
-                this.isSprinting = true;
-                this.sprintButton.classList.add('active');
-            }
             else if (this.cameraTouchId === null && 
                      !this.isInsideElement(touch, this.joystickContainer) &&
-                     !this.isInsideElement(touch, this.jumpButton) &&
-                     !this.isInsideElement(touch, this.sprintButton)) {
-                // Toque para cámara (cualquier lugar que no sea un control)
+                     !this.isInsideElement(touch, this.jumpButton)) {
+                // Toque para cámara
                 this.cameraTouchId = touch.identifier;
                 this.cameraLastX = touch.clientX;
                 this.cameraLastY = touch.clientY;
@@ -120,6 +118,11 @@ const TouchManager = {
             
             // Liberar joystick
             if (touch.identifier === this.joystickTouchId) {
+                // Verificar si estaba en zona de sprint antes de soltar
+                if (this.joystickInputY <= this.sprintThreshold) {
+                    this.isSprinting = true;
+                    this.updateSprintVisual();
+                }
                 this.resetJoystick();
             }
             
@@ -132,13 +135,6 @@ const TouchManager = {
             if (touch.identifier === this.jumpTouchId) {
                 this.jumpTouchId = null;
                 this.isJumping = false;
-            }
-            
-            // Liberar sprint
-            if (touch.identifier === this.sprintTouchId) {
-                this.sprintTouchId = null;
-                this.isSprinting = false;
-                this.sprintButton.classList.remove('active');
             }
         }
     },
@@ -178,8 +174,15 @@ const TouchManager = {
         this.joystickInputX = deltaX / this.joystickMaxDistance;
         this.joystickInputY = deltaY / this.joystickMaxDistance;
         
-        // Actualizar visual
+        // Actualizar visual del stick
         this.joystickStick.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
+        
+        // Mostrar indicador visual cuando está en zona de sprint
+        if (this.joystickInputY <= this.sprintThreshold) {
+            this.sprintZone.classList.add('active');
+        } else {
+            this.sprintZone.classList.remove('active');
+        }
     },
     
     resetJoystick() {
@@ -188,6 +191,15 @@ const TouchManager = {
         this.joystickInputX = 0;
         this.joystickInputY = 0;
         this.joystickStick.style.transform = 'translate(-50%, -50%)';
+        this.sprintZone.classList.remove('active');
+    },
+    
+    updateSprintVisual() {
+        if (this.isSprinting) {
+            this.sprintZone.classList.add('active');
+        } else {
+            this.sprintZone.classList.remove('active');
+        }
     },
     
     updateCamera(touch) {
