@@ -10,11 +10,7 @@
       border: none;
       cursor: pointer;
     ">
-      ▶ Abrir experiencia
+      ▶ CLICK PARA ABRIR
     </button>
   </a>
-</p>
-
-<p align="center">
-  Click para abrir el proyecto en una pestaña nueva.
 </p>
